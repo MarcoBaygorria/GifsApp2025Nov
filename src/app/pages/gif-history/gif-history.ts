@@ -1,17 +1,25 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop'
 import { map } from 'rxjs';
+import { GifService } from 'src/app/gifs/services/gifs.service';
+import { GifList } from "src/app/gifs/components/gif-list/gif-list";
 
 @Component({
   selector: 'app-gif-history',
-  imports: [],
+  imports: [GifList],
   templateUrl: './gif-history.html',
 })
 export default class GifHistory {
+
+  gifService = inject(GifService);
+
   query = toSignal(
     inject(ActivatedRoute).params.pipe(
-      map(params => params['query'])
-    )
-  )
+      map(params => params['query']))
+  );
+
+  gifsByKey = computed(() => {
+    return this.gifService.getHistoryGifs(this.query());
+  })
 }
